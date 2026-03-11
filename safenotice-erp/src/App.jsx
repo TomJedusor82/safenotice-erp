@@ -673,7 +673,7 @@ Pour chaque chapitre : contenu riche et professionnel, adapté précisément aux
               </h1>
               <p style={{color:"#64748b",fontSize:13,margin:0}}>{filteredNotices.length} notice{filteredNotices.length!==1?"s":""}</p>
             </div>
-            <div style={{display:"flex",gap:10",alignItems:"center"}}>
+            <div style={{display:"flex",gap:10,alignItems:"center"}}>
               {filterEtab!=="all"&&<button onClick={()=>setFilterEtab("all")} className="btn-ghost" style={{fontSize:12,padding:"8px 14px"}}>✕ Retirer filtre</button>}
               <button className="btn-primary" onClick={()=>{setForm(EMPTY);setStep(1);setError(null);setView("form");}}>+ Nouvelle notice</button>
             </div>
@@ -910,7 +910,7 @@ Pour chaque chapitre : contenu riche et professionnel, adapté précisément aux
                 <div style={{fontSize:12,color:"#64748b",marginTop:3}}>{open.typeERP?.split("—")[0]?.trim()} · Cat. {open.categorie} · {open.cp} {open.ville}</div>
               </div>
             </div>
-            <div style={{display:"flex",gap:8"}}>
+            <div style={{display:"flex",gap:8}}>
               <button onClick={()=>exportPDF(open)} className="btn-ghost" style={{fontSize:13}}>🖨️ Imprimer / PDF</button>
               <button onClick={()=>{if(confirm("Supprimer cette notice ?"))del(open.id);}} style={{padding:"10px 16px",background:"rgba(239,68,68,.1)",border:"1px solid #ef444433",color:"#ef4444",borderRadius:8,fontSize:13,cursor:"pointer",fontFamily:"inherit",fontWeight:600,transition:"all .2s"}}>✕ Supprimer</button>
             </div>
