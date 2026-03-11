@@ -318,6 +318,34 @@ const LS="ns_v2_notices";
 const load=()=>{try{return JSON.parse(localStorage.getItem(LS)||"[]");}catch{return[];}};
 const save=(n)=>{try{localStorage.setItem(LS,JSON.stringify(n));}catch{}};
 
+// ─── COMPOSANTS SORTIS DU RENDER POUR ÉVITER RE-MOUNT AU KEYSTROKE ────────────
+function SInput({label, field, placeholder, type="text", form, upd}){
+  return(
+    <div className="field">
+      <label>{label}</label>
+      <input type={type} value={form[field]} onChange={e=>upd(field,e.target.value)} placeholder={placeholder}/>
+    </div>
+  );
+}
+
+function Header({title, sub, back, onNew}){
+  return(
+    <div style={{background:"linear-gradient(135deg,#0a2342 0%,#1e3a5f 100%)",borderBottom:"1px solid rgba(255,255,255,.08)"}}>
+      <div style={{maxWidth:1080,margin:"0 auto",padding:"0 32px",display:"flex",alignItems:"center",justifyContent:"space-between",height:68}}>
+        <div style={{display:"flex",alignItems:"center",gap:14}}>
+          {back&&<button onClick={back} style={{background:"transparent",border:"none",color:"rgba(255,255,255,.55)",cursor:"pointer",fontSize:13,display:"flex",alignItems:"center",gap:5}}>← Accueil</button>}
+          {back&&<div style={{width:1,height:18,background:"rgba(255,255,255,.15)"}}/>}
+          <div style={{display:"flex",alignItems:"center",gap:10}}>
+            <div style={{width:38,height:38,background:"rgba(255,255,255,.1)",borderRadius:9,display:"flex",alignItems:"center",justifyContent:"center",fontSize:19}}>🛡️</div>
+            <div><div style={{fontWeight:700,fontSize:title?15:17,color:"#fff",letterSpacing:.5,fontFamily:title?"inherit":"'Playfair Display',Georgia,serif"}}>{title||"NoticeSecur"}</div><div style={{fontSize:11,color:"rgba(255,255,255,.45)",letterSpacing:.3}}>{sub||"Notices de sécurité ERP"}</div></div>
+          </div>
+        </div>
+        {!back&&<button className="btn-primary" onClick={onNew}>+ Nouvelle notice</button>}
+      </div>
+    </div>
+  );
+}
+
 export default function NoticeSecur(){
   const [notices,setNotices]=useState(load);
   const [view,setView]=useState("home");
@@ -419,34 +447,11 @@ Pour chaque chapitre, cite les articles du règlement de sécurité applicables 
     .section-title{font-size:11px;font-weight:700;color:#1e40af;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:16px;}
   `;
 
-  const SInput=({label,field,placeholder,type="text",half=false})=>(
-    <div className="field" style={half?{minWidth:0}:{}}>
-      <label>{label}</label>
-      <input type={type} value={form[field]} onChange={e=>upd(field,e.target.value)} placeholder={placeholder}/>
-    </div>
-  );
-
-  const Header=({title,sub,back})=>(
-    <div style={{background:"linear-gradient(135deg,#0a2342 0%,#1e3a5f 100%)",borderBottom:"1px solid rgba(255,255,255,.08)"}}>
-      <div style={{maxWidth:1080,margin:"0 auto",padding:"0 32px",display:"flex",alignItems:"center",justifyContent:"space-between",height:68}}>
-        <div style={{display:"flex",alignItems:"center",gap:14}}>
-          {back&&<button onClick={back} style={{background:"transparent",border:"none",color:"rgba(255,255,255,.55)",cursor:"pointer",fontSize:13,display:"flex",alignItems:"center",gap:5}}>← Accueil</button>}
-          {back&&<div style={{width:1,height:18,background:"rgba(255,255,255,.15)"}}/>}
-          <div style={{display:"flex",alignItems:"center",gap:10}}>
-            <div style={{width:38,height:38,background:"rgba(255,255,255,.1)",borderRadius:9,display:"flex",alignItems:"center",justifyContent:"center",fontSize:19}}>🛡️</div>
-            <div><div style={{fontWeight:700,fontSize:title?15:17,color:"#fff",letterSpacing:.5,fontFamily:title?"inherit":"'Playfair Display',Georgia,serif"}}>{title||"NoticeSecur"}</div><div style={{fontSize:11,color:"rgba(255,255,255,.45)",letterSpacing:.3}}>{sub||"Notices de sécurité ERP"}</div></div>
-          </div>
-        </div>
-        {!back&&<button className="btn-primary" onClick={()=>{setForm(EMPTY);setStep(1);setView("new");}}>+ Nouvelle notice</button>}
-      </div>
-    </div>
-  );
-
   // ── ACCUEIL ────────────────────────────────────────────────────────────────
   if(view==="home") return(
     <div style={{minHeight:"100vh",background:"#f0f4f8",fontFamily:"'DM Sans',system-ui,sans-serif"}}>
       <style>{css}</style>
-      <Header/>
+      <Header onNew={()=>{setForm(EMPTY);setStep(1);setView("new");}}/>
       <div style={{maxWidth:1080,margin:"0 auto",padding:"36px 32px"}}>
         {!process.env.REACT_APP_ANTHROPIC_API_KEY&&(
           <div style={{background:"#fffbeb",border:"1px solid #fcd34d",borderRadius:10,padding:"14px 20px",marginBottom:24,color:"#92400e",fontSize:13,display:"flex",gap:10,alignItems:"flex-start"}}>
@@ -558,27 +563,27 @@ Pour chaque chapitre, cite les articles du règlement de sécurité applicables 
               <div className="card" style={{padding:24,marginBottom:14}}>
                 <div className="section-title">Identification</div>
                 <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14}}>
-                  <SInput label="Raison sociale *" field="nom" placeholder="Ex : Restaurant Le Mistral"/>
-                  <SInput label="Responsable / Exploitant *" field="responsable" placeholder="Nom et prénom"/>
-                  <SInput label="Téléphone" field="tel" placeholder="06 00 00 00 00"/>
-                  <SInput label="Email" field="email" placeholder="contact@etablissement.fr"/>
+                  <SInput label="Raison sociale *" field="nom" placeholder="Ex : Restaurant Le Mistral" form={form} upd={upd}/>
+                  <SInput label="Responsable / Exploitant *" field="responsable" placeholder="Nom et prénom" form={form} upd={upd}/>
+                  <SInput label="Téléphone" field="tel" placeholder="06 00 00 00 00" form={form} upd={upd}/>
+                  <SInput label="Email" field="email" placeholder="contact@etablissement.fr" form={form} upd={upd}/>
                 </div>
               </div>
               <div className="card" style={{padding:24,marginBottom:14}}>
                 <div className="section-title">Adresse</div>
                 <div style={{display:"grid",gridTemplateColumns:"2fr 1fr 1fr",gap:14}}>
-                  <SInput label="Adresse *" field="adresse" placeholder="12 rue de la Paix"/>
-                  <SInput label="Code postal *" field="cp" placeholder="75001"/>
-                  <SInput label="Ville *" field="ville" placeholder="Paris"/>
+                  <SInput label="Adresse *" field="adresse" placeholder="12 rue de la Paix" form={form} upd={upd}/>
+                  <SInput label="Code postal *" field="cp" placeholder="75001" form={form} upd={upd}/>
+                  <SInput label="Ville *" field="ville" placeholder="Paris" form={form} upd={upd}/>
                 </div>
               </div>
               <div className="card" style={{padding:24,marginBottom:24}}>
                 <div className="section-title">Classement ERP</div>
                 <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr 1fr",gap:14,marginBottom:18}}>
                   <div className="field"><label>Catégorie ERP</label><select value={form.categorie} onChange={e=>upd("categorie",e.target.value)} style={{padding:"10px 14px",border:"1.5px solid #e2e8f0",borderRadius:8,fontSize:14,width:"100%",fontFamily:"inherit"}}><option value="">Choisir</option><option value="1ère (+ 1500 pers.)">1ère (+ 1500 pers.)</option><option value="2ème (701 à 1500)">2ème (701 à 1500)</option><option value="3ème (301 à 700)">3ème (301 à 700)</option><option value="4ème (200 à 300)">4ème (200 à 300)</option><option value="5ème (seuils bas)">5ème (seuils bas)</option></select></div>
-                  <SInput label="Capacité (pers.) *" field="capacite" placeholder="150"/>
-                  <SInput label="Niveaux" field="niveaux" placeholder="2"/>
-                  <SInput label="Surface totale (m²)" field="surface" placeholder="450"/>
+                  <SInput label="Capacité (pers.) *" field="capacite" placeholder="150" form={form} upd={upd}/>
+                  <SInput label="Niveaux" field="niveaux" placeholder="2" form={form} upd={upd}/>
+                  <SInput label="Surface totale (m²)" field="surface" placeholder="450" form={form} upd={upd}/>
                 </div>
                 <div className="section-title">Locaux concernés (art. GN1)</div>
                 <div style={{display:"flex",flexWrap:"wrap",gap:8}}>
@@ -599,8 +604,8 @@ Pour chaque chapitre, cite les articles du règlement de sécurité applicables 
               <div className="card" style={{padding:24,marginBottom:14}}>
                 <div className="section-title">Chap. II — Implantation & desserte (art. CO 1-5)</div>
                 <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:14}}>
-                  <SInput label="Façades accessibles (pompiers)" field="nbFacadesAccessibles" placeholder="Ex : 2"/>
-                  <SInput label="Largeur voie desserte (m)" field="largeurVoie" placeholder="Ex : 6"/>
+                  <SInput label="Façades accessibles (pompiers)" field="nbFacadesAccessibles" placeholder="Ex : 2" form={form} upd={upd}/>
+                  <SInput label="Largeur voie desserte (m)" field="largeurVoie" placeholder="Ex : 6" form={form} upd={upd}/>
                   <div className="field"><label>Isolement par rapport aux tiers</label><select value={form.typeIsolement} onChange={e=>upd("typeIsolement",e.target.value)} style={{padding:"10px 14px",border:"1.5px solid #e2e8f0",borderRadius:8,fontSize:14,width:"100%",fontFamily:"inherit"}}><option value="">Choisir</option><option>Bâtiment isolé</option><option>Contigu habitation</option><option>Contigu commerce</option><option>En vis-à-vis moins de 4m</option><option>En vis-à-vis 4-8m</option></select></div>
                 </div>
               </div>
@@ -608,18 +613,18 @@ Pour chaque chapitre, cite les articles du règlement de sécurité applicables 
                 <div className="section-title">Chap. III — Résistance au feu (art. CO 12-15)</div>
                 <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr 1fr",gap:14,marginBottom:14}}>
                   <div className="field"><label>Stabilité au feu structure</label><select value={form.resistanceFeu} onChange={e=>upd("resistanceFeu",e.target.value)} style={{padding:"10px 14px",border:"1.5px solid #e2e8f0",borderRadius:8,fontSize:14,width:"100%",fontFamily:"inherit"}}><option value="">Choisir</option><option>SF 1/2h</option><option>SF 1h</option><option>SF 1h30</option><option>Non exigée</option></select></div>
-                  <SInput label="Matériaux plafonds (M0-M4)" field="natureMateriauxPlafond" placeholder="Ex : M0 — BA13"/>
-                  <SInput label="Matériaux murs (M0-M4)" field="natureMateriauxMurs" placeholder="Ex : M1 — enduit"/>
-                  <SInput label="Matériaux sol (M0-M4)" field="natureMateriauxSol" placeholder="Ex : M3 — moquette"/>
+                  <SInput label="Matériaux plafonds (M0-M4)" field="natureMateriauxPlafond" placeholder="Ex : M0 — BA13" form={form} upd={upd}/>
+                  <SInput label="Matériaux murs (M0-M4)" field="natureMateriauxMurs" placeholder="Ex : M1 — enduit" form={form} upd={upd}/>
+                  <SInput label="Matériaux sol (M0-M4)" field="natureMateriauxSol" placeholder="Ex : M3 — moquette" form={form} upd={upd}/>
                 </div>
               </div>
               <div className="card" style={{padding:24,marginBottom:24}}>
                 <div className="section-title">Chap. IV — Dégagements (art. CO 34-45)</div>
                 <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr 1fr",gap:14}}>
-                  <SInput label="Nombre de sorties" field="sorties" placeholder="Ex : 3"/>
-                  <SInput label="Largeur sorties (m)" field="largeurSorties" placeholder="Ex : 1.40"/>
-                  <SInput label="Nombre d'escaliers" field="nbEscaliers" placeholder="Ex : 2"/>
-                  <SInput label="Largeur escaliers (m)" field="largeurEscaliers" placeholder="Ex : 1.20"/>
+                  <SInput label="Nombre de sorties" field="sorties" placeholder="Ex : 3" form={form} upd={upd}/>
+                  <SInput label="Largeur sorties (m)" field="largeurSorties" placeholder="Ex : 1.40" form={form} upd={upd}/>
+                  <SInput label="Nombre d'escaliers" field="nbEscaliers" placeholder="Ex : 2" form={form} upd={upd}/>
+                  <SInput label="Largeur escaliers (m)" field="largeurEscaliers" placeholder="Ex : 1.20" form={form} upd={upd}/>
                 </div>
               </div>
               <div style={{display:"flex",gap:10}}><button className="btn-ghost" onClick={()=>setStep(2)}>← Retour</button><button className="btn-primary" onClick={()=>setStep(4)}>Continuer →</button></div>
@@ -653,15 +658,15 @@ Pour chaque chapitre, cite les articles du règlement de sécurité applicables 
                 </div>
                 <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14}}>
                   <div className="field"><label>Type d'alarme (art. MS 62)</label><select value={form.typeAlarme} onChange={e=>upd("typeAlarme",e.target.value)} style={{padding:"10px 14px",border:"1.5px solid #e2e8f0",borderRadius:8,fontSize:14,width:"100%",fontFamily:"inherit"}}><option value="">Choisir</option><option>Type 1 (SSI catégorie A)</option><option>Type 2a (centralisé)</option><option>Type 2b (centralisé simplifié)</option><option>Type 3 (diffusion)</option><option>Type 4 (autonome)</option></select></div>
-                  <SInput label="Chap. VI — Chauffage (nature combustible)" field="chauffageNature" placeholder="Ex : Gaz naturel, PAC, fioul"/>
-                  <SInput label="Chap. VII — Cuisine (puissance kW)" field="cuisinePuissance" placeholder="Ex : 45 (si > 20 kW : art. GC)"/>
+                  <SInput label="Chap. VI — Chauffage (nature combustible)" field="chauffageNature" placeholder="Ex : Gaz naturel, PAC, fioul" form={form} upd={upd}/>
+                  <SInput label="Chap. VII — Cuisine (puissance kW)" field="cuisinePuissance" placeholder="Ex : 45 (si > 20 kW : art. GC)" form={form} upd={upd}/>
                 </div>
               </div>
               <div className="card" style={{padding:24,marginBottom:24}}>
                 <div className="section-title">Commission de sécurité</div>
                 <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14,marginBottom:14}}>
-                  <SInput label="Dernière visite commission" field="derniereVisite" type="date"/>
-                  <SInput label="Prochaine visite prévue" field="prochaineVisite" type="date"/>
+                  <SInput label="Dernière visite commission" field="derniereVisite" type="date" form={form} upd={upd}/>
+                  <SInput label="Prochaine visite prévue" field="prochaineVisite" type="date" form={form} upd={upd}/>
                 </div>
                 <div className="field"><label>Observations complémentaires</label><textarea value={form.observations} onChange={e=>upd("observations",e.target.value)} rows={3} placeholder="Travaux en cours, dérogations accordées, observations particulières…" style={{resize:"vertical"}}/></div>
               </div>
