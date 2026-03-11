@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState } from "react";
 
 // ─── STORAGE (localStorage standard) ────────────────────────────────────────
 const LS_KEY = "safenotice_notices";
@@ -286,7 +286,7 @@ hr{border:none;border-top:1px solid #e0e0e0;margin:18px 0}
 ${(notice.noticeText||"").replace(/^# (.+)$/gm,"<h1>$1</h1>").replace(/^## (.+)$/gm,"<h2>$1</h2>").replace(/^### (.+)$/gm,"<h3>$1</h3>").replace(/\*\*(.+?)\*\*/g,"<strong>$1</strong>").replace(/^---$/gm,"<hr>").split("\n").map(l=>{if(l.startsWith("<h")||l.startsWith("<hr"))return l;if(l.startsWith("- "))return`<li>${l.slice(2)}</li>`;if(l.trim()==="")return"<br>";return`<p>${l}</p>`;}).join("\n")}
 </div>
 <div class="footer">Document généré le ${new Date().toLocaleDateString("fr-FR")} · SafeNotice ERP · À conserver dans le registre de sécurité</div>
-<script>window.onload=()=>window.print()<\/script>
+<script>window.onload=()=>window.print()</script>
 </body></html>`;
   win.document.write(html); win.document.close();
 }
