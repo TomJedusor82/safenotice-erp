@@ -701,7 +701,7 @@ Pour chaque chapitre : contenu riche et professionnel, adapté précisément aux
                       <div style={{fontSize:11,color:"#3a3a5a"}}>{n.savedAt}</div>
                       <div style={{display:"flex",gap:6}}>
                         <button onClick={e=>{e.stopPropagation();exportPDF(n);}} style={{padding:"5px 11px",borderRadius:5,border:"1px solid #2a2a3a",background:"transparent",color:"#94a3b8",fontSize:11,cursor:"pointer",fontFamily:"inherit",transition:"all .15s"}} onMouseEnter={e=>e.currentTarget.style.borderColor="#ef4444"} onMouseLeave={e=>e.currentTarget.style.borderColor="#2a2a3a"}>PDF</button>
-                        <button onClick={e=>{e.stopPropagation();if(confirm("Supprimer ?"))del(n.id);}} style={{padding:"5px 11px",borderRadius:5,border:"1px solid #2a2a3a",background:"transparent",color:"#64748b",fontSize:11,cursor:"pointer",fontFamily:"inherit",transition:"all .15s"}} onMouseEnter={e=>e.currentTarget.style.color="#ef4444"} onMouseLeave={e=>e.currentTarget.style.color="#64748b"}>✕</button>
+                        <button onClick={e=>{e.stopPropagation();if(window.confirm("Supprimer ?"))del(n.id);}} style={{padding:"5px 11px",borderRadius:5,border:"1px solid #2a2a3a",background:"transparent",color:"#64748b",fontSize:11,cursor:"pointer",fontFamily:"inherit",transition:"all .15s"}} onMouseEnter={e=>e.currentTarget.style.color="#ef4444"} onMouseLeave={e=>e.currentTarget.style.color="#64748b"}>✕</button>
                       </div>
                     </div>
                   </div>
@@ -912,7 +912,7 @@ Pour chaque chapitre : contenu riche et professionnel, adapté précisément aux
             </div>
             <div style={{display:"flex",gap:8}}>
               <button onClick={()=>exportPDF(open)} className="btn-ghost" style={{fontSize:13}}>🖨️ Imprimer / PDF</button>
-              <button onClick={()=>{if(confirm("Supprimer cette notice ?"))del(open.id);}} style={{padding:"10px 16px",background:"rgba(239,68,68,.1)",border:"1px solid #ef444433",color:"#ef4444",borderRadius:8,fontSize:13,cursor:"pointer",fontFamily:"inherit",fontWeight:600,transition:"all .2s"}}>✕ Supprimer</button>
+              <button onClick={()=>{if(window.confirm("Supprimer cette notice ?"))del(open.id);}} style={{padding:"10px 16px",background:"rgba(239,68,68,.1)",border:"1px solid #ef444433",color:"#ef4444",borderRadius:8,fontSize:13,cursor:"pointer",fontFamily:"inherit",fontWeight:600,transition:"all .2s"}}>✕ Supprimer</button>
             </div>
           </div>
 
