@@ -223,7 +223,159 @@ function RN({text}){if(!text)return null;return text.split("\n").map((l,i)=>{
 
 // ━━━ PDF EXPORT ━━━
 function xPDF(n){const w=window.open("","_blank");if(!w)return;const c=CATEGORIES_ERP[n.typeERP]?.code||"";const d=new Date().toLocaleDateString("fr-FR",{day:"numeric",month:"long",year:"numeric"});
-w.document.write(`<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><title>Notice — ${n.nom}</title><style>@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Figtree:wght@400;500;600&display=swap');*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Figtree',sans-serif;color:#1e293b;font-size:11pt;line-height:1.7}.cover{background:linear-gradient(145deg,#07070e,#0e0e1a 40%,#1a1520);color:#fff;padding:70px 60px;page-break-after:always}.cover h1{font-family:'Outfit';font-size:30pt;font-weight:700;margin-bottom:8px;line-height:1.2}.cover h2{font-size:13pt;opacity:.6;margin-bottom:12px}.cover-div{width:60px;height:3px;background:linear-gradient(90deg,#d97706,#f59e0b);margin:20px 0 36px;border-radius:2px}.cover-g{display:grid;grid-template-columns:1fr 1fr;gap:14px}.cover-i{background:rgba(255,255,255,.04);border-left:3px solid #f59e0b;padding:12px 16px;border-radius:0 6px 6px 0}.cover-i .l{font-size:8pt;opacity:.5;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}.cover-i .v{font-size:11pt;font-weight:600}.ct{padding:50px 60px}h1{font-family:'Outfit';font-size:17pt;color:#0a0a1a;border-bottom:2px solid #f59e0b;padding-bottom:8px;margin:30px 0 14px}h2{font-family:'Outfit';font-size:12pt;margin:20px 0 9px;font-weight:700}h3{font-size:11pt;color:#d97706;margin:14px 0 6px;font-weight:600}p{margin-bottom:8px;color:#374151}li{margin-bottom:5px;color:#374151}ul{margin:8px 0 8px 16px;list-style:none}ul li::before{content:"▸ ";color:#f59e0b}hr{border:none;border-top:1px solid #e2e8f0;margin:18px 0}strong{color:#0f172a}.ft{background:#07070e;color:rgba(255,255,255,.3);display:flex;justify-content:space-between;padding:14px 60px;font-size:8pt}@media print{.cover,.ft{-webkit-print-color-adjust:exact;print-color-adjust:exact}}</style></head><body><div class="cover"><div style="display:flex;align-items:center;gap:12px;margin-bottom:48px;opacity:.9"><div style="width:44px;height:44px;background:linear-gradient(135deg,#d97706,#f59e0b);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px">🛡️</div><div style="font-size:15pt;font-weight:700;letter-spacing:2px;font-family:'Outfit'">SAFENOTICE ERP</div></div><div style="display:inline-block;background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.35);color:#fbbf24;padding:5px 14px;border-radius:3px;font-size:8pt;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:20px">Notice de Sécurité — Art. GE2</div><h1>${n.nom}</h1><h2>Type ${c} · Cat. ${n.categorie||"N/A"}</h2><div class="cover-div"></div><div class="cover-g"><div class="cover-i"><div class="l">Adresse</div><div class="v">${n.adresse}, ${n.cp} ${n.ville}</div></div><div class="cover-i"><div class="l">Responsable</div><div class="v">${n.responsable}</div></div><div class="cover-i"><div class="l">Capacité</div><div class="v">${n.capacite} pers.</div></div><div class="cover-i"><div class="l">Édition</div><div class="v">${d}</div></div></div></div><div class="ct">${(n.noticeText||"").replace(/^# (.+)$/gm,"<h1>$1</h1>").replace(/^## (.+)$/gm,"<h2>$1</h2>").replace(/^### (.+)$/gm,"<h3>$1</h3>").replace(/\*\*(.+?)\*\*/g,"<strong>$1</strong>").replace(/^---$/gm,"<hr>").split("\n").map(l=>{if(l.startsWith("<h")||l.startsWith("<hr"))return l;if(l.startsWith("- "))return"<li>"+l.slice(2)+"</li>";if(l.trim()==="")return"<br>";return"<p>"+l+"</p>";}).join("\n")}</div><div class="ft"><span>SafeNotice ERP</span><span>Registre de sécurité</span><span>${new Date().toLocaleDateString("fr-FR")}</span></div><${"script"}>window.onload=()=>window.print()</${"script"}></body></html>`);w.document.close();}
+const moyList=Object.entries(n.moyens||{}).filter(([,v])=>v).map(([k])=>MOYENS[k]||k);
+const moyRows=moyList.map((m,i)=>`<tr><td>${i+1}</td><td>${m}</td><td>Conforme</td></tr>`).join("");
+// Extract chapter titles for TOC
+const chapters=[];
+const bodyHtml=(n.noticeText||"").split("\n").map((l,i)=>{
+if(l.startsWith("## ")){const t=l.slice(3);const id="ch-"+i;chapters.push({id,title:t});return'<h2 id="'+id+'">'+t+'</h2>';}
+if(l.startsWith("# "))return"<h1>"+l.slice(2)+"</h1>";
+if(l.startsWith("### "))return"<h3>"+l.slice(4)+"</h3>";
+if(l.startsWith("---"))return"<hr>";
+if(l.startsWith("- "))return'<li>'+l.slice(2)+'</li>';
+if(l.trim()==="")return"<br>";
+return"<p>"+l.replace(/\*\*(.+?)\*\*/g,"<strong>$1</strong>")+"</p>";
+}).join("\n");
+const tocHtml=chapters.map((ch,i)=>'<div class="toc-row"><a href="#'+ch.id+'">'+(i+1)+". "+ch.title+'</a><span class="toc-dots"></span></div>').join("");
+w.document.write(`<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><title>Notice ERP — ${n.nom}</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Figtree:wght@400;500;600&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Figtree',sans-serif;color:#1e293b;font-size:10.5pt;line-height:1.75;background:#fff}
+@page{margin:20mm 18mm 22mm 18mm;@bottom-center{content:counter(page)" / "counter(pages);font-size:8pt;color:#94a3b8}}
+
+/* COVER */
+.cover{padding:60px 50px;border-bottom:3px solid #d97706;page-break-after:always;position:relative}
+.cover-logo{display:flex;align-items:center;gap:14px;margin-bottom:50px}
+.cover-logo-icon{width:48px;height:48px;background:#d97706;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;color:#fff;font-weight:700}
+.cover-logo-text{font-family:'Outfit',sans-serif;font-size:16pt;font-weight:700;letter-spacing:2px;color:#1e293b}
+.cover-logo-sub{font-size:9pt;color:#64748b;letter-spacing:1px}
+.cover-badge{display:inline-block;border:2px solid #d97706;color:#92400e;padding:5px 16px;border-radius:4px;font-size:8pt;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;margin-bottom:24px}
+.cover h1{font-family:'Outfit',sans-serif;font-size:28pt;font-weight:800;color:#0f172a;margin-bottom:6px;line-height:1.15}
+.cover h2{font-size:12pt;font-weight:400;color:#64748b;margin-bottom:8px}
+.cover-line{width:60px;height:3px;background:#d97706;margin:24px 0 36px;border-radius:2px}
+.cover-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.cover-item{border-left:3px solid #d97706;padding:10px 16px;background:#fffbeb}
+.cover-item .lbl{font-size:7.5pt;color:#92400e;text-transform:uppercase;letter-spacing:1.2px;font-weight:600;margin-bottom:3px}
+.cover-item .val{font-size:11pt;font-weight:600;color:#1e293b}
+.cover-user-logo{position:absolute;top:60px;right:50px;width:90px;height:90px;border:2px dashed #d1d5db;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:8pt;color:#94a3b8;text-align:center;line-height:1.3}
+
+/* TOC */
+.toc{padding:50px;page-break-after:always}
+.toc h2{font-family:'Outfit',sans-serif;font-size:18pt;font-weight:700;color:#0f172a;margin-bottom:6px}
+.toc-sub{font-size:10pt;color:#64748b;margin-bottom:28px}
+.toc-line{width:40px;height:2px;background:#d97706;margin-bottom:24px}
+.toc-row{display:flex;align-items:baseline;margin-bottom:8px;font-size:10.5pt}
+.toc-row a{color:#1e293b;text-decoration:none;font-weight:500;white-space:nowrap}
+.toc-row a:hover{color:#d97706}
+.toc-dots{flex:1;border-bottom:1px dotted #cbd5e1;margin:0 8px;min-width:20px}
+
+/* CONTENT */
+.content{padding:0 50px 40px}
+h1{font-family:'Outfit',sans-serif;font-size:16pt;color:#0f172a;border-bottom:2px solid #d97706;padding-bottom:8px;margin:32px 0 14px;page-break-after:avoid}
+h2{font-family:'Outfit',sans-serif;font-size:13pt;color:#1e293b;margin:26px 0 10px;font-weight:700;border-left:3px solid #d97706;padding-left:12px;page-break-after:avoid}
+h3{font-size:10.5pt;color:#92400e;margin:14px 0 6px;font-weight:600;page-break-after:avoid}
+p{margin-bottom:7px;color:#374151;page-break-inside:avoid}
+li{margin-bottom:4px;padding-left:6px;color:#374151;page-break-inside:avoid}
+ul{margin:6px 0 10px 14px;list-style:none}
+ul li::before{content:"▸ ";color:#d97706;font-weight:700}
+hr{border:none;border-top:1px solid #e2e8f0;margin:20px 0}
+strong{color:#0f172a;font-weight:700}
+
+/* MOYENS TABLE */
+.moyens-table{width:100%;border-collapse:collapse;margin:16px 0 20px;font-size:10pt;page-break-inside:avoid}
+.moyens-table th{background:#fffbeb;border:1px solid #e5e7eb;padding:8px 12px;text-align:left;font-weight:700;color:#92400e;font-size:9pt;text-transform:uppercase;letter-spacing:.5px}
+.moyens-table td{border:1px solid #e5e7eb;padding:7px 12px;color:#374151}
+.moyens-table tr:nth-child(even) td{background:#fafafa}
+.moyens-table .status{color:#15803d;font-weight:600}
+
+/* HEADER / FOOTER for print */
+.page-header{display:flex;justify-content:space-between;align-items:center;padding:0 0 8px;border-bottom:1px solid #e2e8f0;margin-bottom:20px;font-size:8pt;color:#94a3b8}
+.page-header .logo-sm{font-family:'Outfit',sans-serif;font-weight:700;font-size:9pt;color:#d97706}
+
+/* Keep titles with their content */
+h1+*,h2+*,h3+*{page-break-before:avoid}
+h1,h2,h3{page-break-after:avoid;page-break-inside:avoid}
+.keep{page-break-inside:avoid}
+
+/* SIGNATURE */
+.signature{margin-top:40px;page-break-inside:avoid;border-top:1px solid #e2e8f0;padding-top:24px}
+.sig-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:16px}
+.sig-box{text-align:center}
+.sig-line{border-bottom:1px solid #94a3b8;height:60px;margin-bottom:6px}
+.sig-label{font-size:9pt;color:#64748b}
+
+@media print{
+  body{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .cover-user-logo{border-color:#d1d5db}
+  @page{margin:18mm 16mm 20mm 16mm}
+}
+</style></head><body>
+
+<!-- COVER PAGE -->
+<div class="cover">
+  <div class="cover-user-logo">Votre<br>logo ici</div>
+  <div class="cover-logo">
+    <div class="cover-logo-icon">SN</div>
+    <div>
+      <div class="cover-logo-text">SAFENOTICE ERP</div>
+      <div class="cover-logo-sub">Sécurité Incendie</div>
+    </div>
+  </div>
+  <div class="cover-badge">Notice de Sécurité ERP — Art. GE2</div>
+  <h1>${n.nom}</h1>
+  <h2>Type ${c} · Catégorie ${n.categorie||"N/A"} · ${(n.typeERP||"").split("—")[1]?.trim()||""}</h2>
+  <div class="cover-line"></div>
+  <div class="cover-grid">
+    <div class="cover-item"><div class="lbl">Adresse</div><div class="val">${n.adresse}, ${n.cp} ${n.ville}</div></div>
+    <div class="cover-item"><div class="lbl">Responsable / Exploitant</div><div class="val">${n.responsable}</div></div>
+    <div class="cover-item"><div class="lbl">Capacité d'accueil</div><div class="val">${n.capacite} personnes</div></div>
+    <div class="cover-item"><div class="lbl">Surface</div><div class="val">${n.surface||"—"} m²</div></div>
+    <div class="cover-item"><div class="lbl">Niveaux</div><div class="val">${n.niveaux||"—"}</div></div>
+    <div class="cover-item"><div class="lbl">Date d'édition</div><div class="val">${d}</div></div>
+  </div>
+</div>
+
+<!-- SOMMAIRE -->
+<div class="toc">
+  <h2>Sommaire</h2>
+  <div class="toc-sub">Notice de sécurité — ${n.nom}</div>
+  <div class="toc-line"></div>
+  ${tocHtml}
+  <div style="margin-top:24px;padding:14px 18px;background:#fffbeb;border:1px solid #fde68a;border-radius:6px;font-size:9.5pt;color:#92400e;page-break-inside:avoid">
+    <strong>Rappel réglementaire :</strong> La présente notice est établie conformément à l'article GE 2 de l'arrêté du 25 juin 1980 modifié. Elle doit être jointe à toute demande d'autorisation de construire, d'aménager ou de modifier un ERP (art. R.123-22 du CCH).
+  </div>
+</div>
+
+<!-- CONTENT -->
+<div class="content">
+  <div class="page-header">
+    <span class="logo-sm">SafeNotice ERP</span>
+    <span>${n.nom} — Type ${c} · Cat. ${n.categorie||"N/A"}</span>
+  </div>
+  ${bodyHtml}
+
+  <!-- TABLEAU RÉCAPITULATIF MOYENS DE SECOURS -->
+  ${moyList.length>0?'<div class="keep"><h3>Tableau récapitulatif des moyens de secours</h3><table class="moyens-table"><thead><tr><th>N°</th><th>Moyen de secours</th><th>État</th></tr></thead><tbody>'+moyRows+'</tbody></table></div>':""}
+
+  <!-- SIGNATURE -->
+  <div class="signature">
+    <h3>Déclaration de l'exploitant</h3>
+    <p>Je soussigné(e), <strong>${n.responsable}</strong>, exploitant de l'établissement « ${n.nom} », déclare avoir pris connaissance des obligations de sécurité incendie et m'engage à maintenir les conditions décrites dans la présente notice.</p>
+    <div class="sig-grid">
+      <div>
+        <p style="font-size:10pt;color:#374151">Fait à ${n.ville}, le ${d}</p>
+      </div>
+      <div class="sig-box">
+        <div class="sig-line"></div>
+        <div class="sig-label">Signature et cachet de l'exploitant</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<${"script"}>window.onload=()=>window.print()</${"script"}>
+</body></html>`);w.document.close();}
 
 // ━━━ PROMPT ━━━
 function bPrompt(f){const ma=Object.entries(f.moyens).filter(([,v])=>v).map(([k])=>MOYENS[k]).join(", ");const c=CATEGORIES_ERP[f.typeERP]?.code||"";const ar=CATEGORIES_ERP[f.typeERP]?.articles||"";
