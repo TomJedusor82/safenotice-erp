@@ -113,9 +113,19 @@ const PLAN_TOOLS=[
 const gtc=t=>PLAN_TOOLS.find(x=>x.id===t)?.color||"#000";
 const ck=(r,c)=>`${r}-${c}`;
 
-// ━━━ PERSISTENT STORAGE ━━━
-async function sGet(k,fb){try{const r=await window.storage.get(k);return r?JSON.parse(r.value):fb;}catch{return fb;}}
-async function sSet(k,v){try{await window.storage.set(k,JSON.stringify(v));}catch(e){console.error("storage:",e);}}
+// ━━━ PERSISTENT STORAGE (localStorage fallback) ━━━
+async function sGet(k,fb){
+  try{
+    if(window.storage){const r=await window.storage.get(k);return r?JSON.parse(r.value):fb;}
+    const v=localStorage.getItem(k);return v?JSON.parse(v):fb;
+  }catch{return fb;}
+}
+async function sSet(k,v){
+  try{
+    if(window.storage){await window.storage.set(k,JSON.stringify(v));return;}
+    localStorage.setItem(k,JSON.stringify(v));
+  }catch(e){console.error("storage:",e);}
+}
 
 // ━━━ CSS ━━━
 const CSS=`
@@ -301,7 +311,7 @@ export default function SafeNotice(){
   const restDraft=async()=>{try{const d=await sGet("sn:draft",null);if(d){const{_step,_t,...fd}=d;setForm(fd);setStep(_step||1);setView("form");setDirty(true);setHasDraft(false);add("Brouillon restauré","i");}}catch{add("Erreur restauration","e");}};
   const clrDraft=async()=>{try{await sSet("sn:draft",null);}catch{}setHasDraft(false);};
 
-  const gen=async(r=0)=>{setLoading(true);setError(null);try{const res=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1000,messages:[{role:"user",content:bPrompt(form)}]})});const data=await res.json();if(data.error)throw new Error(data.error.message);const txt=data.content?.map(i=>i.text||"").join("\n")||"";const nn={...form,id:Date.now().toString(),noticeText:txt,savedAt:new Date().toLocaleDateString("fr-FR"),planData:{}};setNotices(p=>[nn,...p]);setOpen(nn);setPlan({});setTab("notice");setView("detail");setDirty(false);sSet("sn:draft",null);setHasDraft(false);add("Notice générée !","s");}catch(e){if(r<2){add(`Tentative ${r+2}/3…`,"i");setTimeout(()=>gen(r+1),1500);return;}setError(`Erreur : ${e.message||"Inconnue"}`);add("Échec génération","e");}finally{if(r>=2||r===0)setLoading(false);}};
+  const gen=async(r=0)=>{setLoading(true);setError(null);try{const res=await fetch("/api/generate",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:8096,messages:[{role:"user",content:bPrompt(form)}]})});const data=await res.json();if(data.error)throw new Error(data.error.message);const txt=data.content?.map(i=>i.text||"").join("\n")||"";const nn={...form,id:Date.now().toString(),noticeText:txt,savedAt:new Date().toLocaleDateString("fr-FR"),planData:{}};setNotices(p=>[nn,...p]);setOpen(nn);setPlan({});setTab("notice");setView("detail");setDirty(false);sSet("sn:draft",null);setHasDraft(false);add("Notice générée !","s");}catch(e){if(r<2){add(`Tentative ${r+2}/3…`,"i");setTimeout(()=>gen(r+1),1500);return;}setError(`Erreur : ${e.message||"Inconnue"}`);add("Échec génération","e");}finally{if(r>=2||r===0)setLoading(false);}};
 
   const del=id=>{setNotices(p=>p.filter(n=>n.id!==id));if(open?.id===id)setView("dashboard");add("Notice supprimée","i");};
   const savePlan=()=>{setNotices(p=>p.map(n=>n.id===open.id?{...n,planData:plan}:n));setOpen(p=>({...p,planData:plan}));add("Plan sauvegardé","s");};
