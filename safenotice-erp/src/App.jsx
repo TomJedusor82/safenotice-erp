@@ -419,7 +419,7 @@ Pour chaque chapitre : contenu riche et professionnel, adapté précisément aux
     total:notices.length,
     thisMonth:notices.filter(n=>{
       if(!n.savedAt)return false;
-      const[d,m,y]=n.savedAt.split("/");
+      const[,m,y]=n.savedAt.split("/");
       const now=new Date();
       return parseInt(m)===now.getMonth()+1&&parseInt(y)===now.getFullYear();
     }).length,
