@@ -514,7 +514,7 @@ export default function SafeNotice(){
       <p style={{color:"var(--t3)",fontSize:14,maxWidth:460,margin:"0 auto 8px"}}>Générez des notices de sécurité ERP conformes à l'article GE2 en quelques minutes grâce à l'IA.</p>
       <div className="ob-steps">
         <div className="ob-s"><div className="ob-n">1</div><div style={{fontSize:22,marginBottom:8}}>📝</div><div style={{fontWeight:600,color:"var(--t1)",fontSize:13,marginBottom:4}}>Remplissez le formulaire</div><div style={{fontSize:12,color:"var(--t3)",lineHeight:1.5}}>Type ERP, identification, construction, moyens de secours</div></div>
-        <div className="ob-s"><div className="ob-n">2</div><div style={{fontSize:22,marginBottom:8}}>🤖</div><div style={{fontWeight:600,color:"var(--t1)",fontSize:13,marginBottom:4}}>L'IA génère la notice</div><div style={{fontSize:12,color:"var(--t3)",lineHeight:1.5}}>10 chapitres complets avec articles de loi cités</div></div>
+        <div className="ob-s"><div className="ob-n">2</div><div style={{fontSize:22,marginBottom:8}}>⚡</div><div style={{fontWeight:600,color:"var(--t1)",fontSize:13,marginBottom:4}}>Génération automatique</div><div style={{fontSize:12,color:"var(--t3)",lineHeight:1.5}}>10 chapitres réglementaires avec articles de loi cités</div></div>
         <div className="ob-s"><div className="ob-n">3</div><div style={{fontSize:22,marginBottom:8}}>🖨️</div><div style={{fontWeight:600,color:"var(--t1)",fontSize:13,marginBottom:4}}>Exportez en PDF</div><div style={{fontSize:12,color:"var(--t3)",lineHeight:1.5}}>Couverture, sommaire, tableaux, zone signature</div></div>
       </div>
       <button className="ba" onClick={goNew} style={{marginTop:28,padding:"13px 32px",fontSize:15}}>+ Créer ma première notice</button>
