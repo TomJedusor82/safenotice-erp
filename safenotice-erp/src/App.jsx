@@ -332,9 +332,9 @@ h1,h2,h3{page-break-after:avoid;page-break-inside:avoid}
 <div class="cover">
   <div class="cover-user-logo">Votre<br>logo ici</div>
   <div class="cover-logo">
-    <div class="cover-logo-icon">SN</div>
+    <div class="cover-logo-icon">PN</div>
     <div>
-      <div class="cover-logo-text">SAFENOTICE ERP</div>
+      <div class="cover-logo-text">PREV'NOTICE</div>
       <div class="cover-logo-sub">Sécurité Incendie</div>
     </div>
   </div>
@@ -366,7 +366,7 @@ h1,h2,h3{page-break-after:avoid;page-break-inside:avoid}
 <!-- CONTENT -->
 <div class="content">
   <div class="page-header">
-    <span class="logo-sm">SafeNotice ERP</span>
+    <span class="logo-sm">Prev'Notice</span>
     <span>${n.nom} — Type ${c} · Cat. ${n.categorie||"N/A"}</span>
   </div>
   ${bodyHtml}
@@ -430,7 +430,7 @@ Contenu détaillé, articles cités, adapté type ${c} cat. ${f.categorie}.`;}
 // ━━━ LAYOUT COMPONENTS (outside main component to prevent re-mount) ━━━
 function Side({goNew,navI,view,setView,etabs,showNE,neN,setNeN,neV,setNeV,addEtab,setShowNE,fEtab,setFEtab,collapsed,setCollapsed}){return<div style={{width:collapsed?62:230,background:"var(--bg1)",borderRight:"1px solid var(--b1)",display:"flex",flexDirection:"column",minHeight:"100vh",position:"sticky",top:0,zIndex:10,transition:"width .25s ease"}} className="do">
   <div style={{padding:collapsed?"18px 12px":"26px 20px 22px",borderBottom:"1px solid var(--b1)",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-    {collapsed?<div style={{width:38,height:38,background:"linear-gradient(135deg,#d97706,#f59e0b)",borderRadius:10,display:"flex",alignItems:"center",justifyContent:"center",fontSize:18,margin:"0 auto"}}>🛡️</div>:<><div style={{display:"flex",alignItems:"center",gap:11}}><div style={{width:38,height:38,background:"linear-gradient(135deg,#d97706,#f59e0b)",borderRadius:10,display:"flex",alignItems:"center",justifyContent:"center",fontSize:18,boxShadow:"0 0 20px rgba(245,158,11,.2)",flexShrink:0}}>🛡️</div><div><div style={{fontWeight:700,fontSize:15,color:"var(--t1)",fontFamily:"var(--fd)"}}>SafeNotice</div><div style={{fontSize:10,color:"var(--t3)",fontWeight:500}}>Sécurité ERP</div></div></div></>}
+    {collapsed?<div style={{width:38,height:38,background:"linear-gradient(135deg,#d97706,#f59e0b)",borderRadius:10,display:"flex",alignItems:"center",justifyContent:"center",fontSize:18,margin:"0 auto"}}>🛡️</div>:<><div style={{display:"flex",alignItems:"center",gap:11}}><div style={{width:38,height:38,background:"linear-gradient(135deg,#d97706,#f59e0b)",borderRadius:10,display:"flex",alignItems:"center",justifyContent:"center",fontSize:18,boxShadow:"0 0 20px rgba(245,158,11,.2)",flexShrink:0}}>🛡️</div><div><div style={{fontWeight:700,fontSize:15,color:"var(--t1)",fontFamily:"var(--fd)"}}>Prev'Notice</div><div style={{fontSize:10,color:"var(--t3)",fontWeight:500}}>Sécurité ERP</div></div></div></>}
     <button onClick={()=>setCollapsed(!collapsed)} style={{background:"none",border:"none",color:"var(--t3)",cursor:"pointer",fontSize:14,padding:4,flexShrink:0,marginLeft:collapsed?"auto":0}} title={collapsed?"Ouvrir":"Réduire"}>{collapsed?"▸":"◂"}</button>
   </div>
   <nav style={{padding:collapsed?"8px 6px":"16px 12px"}}>
@@ -446,7 +446,7 @@ function Side({goNew,navI,view,setView,etabs,showNE,neN,setNeN,neV,setNeV,addEta
   </div>}
 </div>}
 
-function MobH({title,back,goNew}){return<div style={{background:"var(--bg1)",borderBottom:"1px solid var(--b1)",padding:"12px 16px",display:"flex",alignItems:"center",gap:12,position:"sticky",top:0,zIndex:100}}>{back&&<button onClick={back} style={{background:"transparent",border:"none",color:"var(--t3)",cursor:"pointer",fontSize:16,padding:0}}>←</button>}<div style={{display:"flex",alignItems:"center",gap:8}}><div style={{width:30,height:30,background:"linear-gradient(135deg,#d97706,#f59e0b)",borderRadius:7,display:"flex",alignItems:"center",justifyContent:"center",fontSize:15}}>🛡️</div><span style={{fontWeight:700,color:"var(--t1)",fontSize:14,fontFamily:"var(--fd)"}}>{title||"SafeNotice"}</span></div><button onClick={goNew} style={{marginLeft:"auto",padding:"7px 14px",background:"linear-gradient(135deg,#d97706,#f59e0b)",color:"#000",border:"none",borderRadius:"var(--r1)",fontSize:12,fontWeight:600,cursor:"pointer"}}>+ Notice</button></div>}
+function MobH({title,back,goNew}){return<div style={{background:"var(--bg1)",borderBottom:"1px solid var(--b1)",padding:"12px 16px",display:"flex",alignItems:"center",gap:12,position:"sticky",top:0,zIndex:100}}>{back&&<button onClick={back} style={{background:"transparent",border:"none",color:"var(--t3)",cursor:"pointer",fontSize:16,padding:0}}>←</button>}<div style={{display:"flex",alignItems:"center",gap:8}}><div style={{width:30,height:30,background:"linear-gradient(135deg,#d97706,#f59e0b)",borderRadius:7,display:"flex",alignItems:"center",justifyContent:"center",fontSize:15}}>🛡️</div><span style={{fontWeight:700,color:"var(--t1)",fontSize:14,fontFamily:"var(--fd)"}}>{title||"Prev'Notice"}</span></div><button onClick={goNew} style={{marginLeft:"auto",padding:"7px 14px",background:"linear-gradient(135deg,#d97706,#f59e0b)",color:"#000",border:"none",borderRadius:"var(--r1)",fontSize:12,fontWeight:600,cursor:"pointer"}}>+ Notice</button></div>}
 
 function Lay({children,title,back,sidebarProps,ts,rm,goNew}){return<div style={{display:"flex",minHeight:"100vh",background:"var(--bg0)"}}><style>{CSS}</style><Side {...sidebarProps}/><div style={{flex:1,display:"flex",flexDirection:"column",minWidth:0}}><div style={{display:"none"}} className="mhw"><MobH title={title} back={back} goNew={goNew}/></div><style>{`@media(max-width:768px){.mhw{display:block!important}}`}</style><div style={{flex:1,padding:"30px 36px",maxWidth:1100,width:"100%"}} className="mp">{children}</div></div><Toasts ts={ts} rm={rm}/></div>}
 
@@ -454,7 +454,7 @@ function Lay({children,title,back,sidebarProps,ts,rm,goNew}){return<div style={{
 // APP PRINCIPALE
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-export default function SafeNotice(){
+export default function PrevNotice(){
   const[notices,setNotices]=useState([]);const[etabs,setEtabs]=useState([]);const[view,setView]=useState("dashboard");const[step,setStep]=useState(1);const[form,setForm]=useState(EMPTY_FORM);const[loading,setLoading]=useState(false);const[genStep,setGenStep]=useState(0);const[error,setError]=useState(null);const[open,setOpen]=useState(null);const[tab,setTab]=useState("notice");const[plan,setPlan]=useState({});const[chk,setChk]=useState({});const[fEtab,setFEtab]=useState("all");const[fType,setFType]=useState("all");const[sq,setSq]=useState("");const[showNE,setShowNE]=useState(false);const[neN,setNeN]=useState("");const[neV,setNeV]=useState("");const[ready,setReady]=useState(false);const[hasDraft,setHasDraft]=useState(false);const[dirty,setDirty]=useState(false);const[collapsed,setCollapsed]=useState(false);
   const{ts,add,rm}=useToast();const dtRef=useRef(null);
 
@@ -510,7 +510,7 @@ export default function SafeNotice(){
     </div>
     {notices.length===0&&<div style={{marginTop:28,textAlign:"center",padding:"48px 24px",border:"1px dashed var(--b2)",borderRadius:"var(--r3)"}}>
       <div style={{fontSize:48,marginBottom:16}}>🛡️</div>
-      <h2 style={{fontSize:22,fontWeight:800,color:"var(--t1)",fontFamily:"var(--fd)",margin:"0 0 8px"}}>Bienvenue sur SafeNotice ERP</h2>
+      <h2 style={{fontSize:22,fontWeight:800,color:"var(--t1)",fontFamily:"var(--fd)",margin:"0 0 8px"}}>Bienvenue sur Prev'Notice</h2>
       <p style={{color:"var(--t3)",fontSize:14,maxWidth:460,margin:"0 auto 8px"}}>Générez des notices de sécurité ERP conformes à l'article GE2 en quelques minutes.</p>
       <div className="ob-steps">
         <div className="ob-s"><div className="ob-n">1</div><div style={{fontSize:22,marginBottom:8}}>📝</div><div style={{fontWeight:600,color:"var(--t1)",fontSize:13,marginBottom:4}}>Remplissez le formulaire</div><div style={{fontSize:12,color:"var(--t3)",lineHeight:1.5}}>Type ERP, identification, construction, moyens de secours</div></div>
